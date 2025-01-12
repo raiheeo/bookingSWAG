@@ -31,19 +31,20 @@ class City(models.Model):
 
 class Hotel(models.Model):
     hotel_name = models.CharField(max_length=255)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='city_hotels')
     country = models.CharField(max_length=64)
     hotel_stars = models.PositiveSmallIntegerField(validators=[
         MinValueValidator(1), MaxValueValidator(5)])
     location = models.CharField(max_length=256)
     description = models.TextField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.hotel_name
 
 
 class HotelImage(models.Model):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='hotel_image')
     hotel_image = models.ImageField(upload_to='hotel_image/')
 
     def __str__(self):
@@ -52,7 +53,7 @@ class HotelImage(models.Model):
 
 class Room(models.Model):
     room_number = models.SmallIntegerField()
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='hotel_rooms')
     TYPE_CHOICES = (
         ('luxury', 'Luxury'),
         ('family', 'Family'),
@@ -79,7 +80,7 @@ class Room(models.Model):
 
 
 class RoomImage(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room_image')
     room_image = models.ImageField(upload_to='room_images/')
 
     def __str__(self):
@@ -94,6 +95,8 @@ class Review(models.Model):
     def __str__(self):
         return f'{self.user}, {self.hotel}'
 
+    class Meta:
+        unique_together = ('hotel', 'user')
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -115,7 +118,7 @@ class Booking(models.Model):
         ('cancelled', 'Cancelled'),
         ('confirmed', 'Confirmed')
     )
-    book_status = models.CharField(max_length=32)
+    book_status = models.CharField(max_length=32, choices=BOOK_STATUS_CHOICES)
 
     def __str__(self):
        return f'{self.room}, {self.check_in}, {self.check_out}'
