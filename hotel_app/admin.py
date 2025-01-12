@@ -1,11 +1,6 @@
 from django.contrib import admin
 from .models import Hotel, HotelImage, Room, RoomImage, City, Booking, Rating, Review, User
-from modeltranslation.admin import TranslationAdmin
-
-
-class HotelImageInline(admin.TabularInline):
-    model = HotelImage
-    extra = 1
+from modeltranslation.admin import TranslationAdmin, TranslationInlineModelAdmin
 
 
 class RoomImageInline(admin.TabularInline):
@@ -13,10 +8,16 @@ class RoomImageInline(admin.TabularInline):
     extra = 1
 
 
-class RoomInline(admin.TabularInline):
+class RoomInline(admin.TabularInline, TranslationInlineModelAdmin):
     model = Room
     extra = 1
-    show_change_link = True  #I've found  here - https://docs.djangoproject.com/en/5.1/ref/contrib/admin/#inlines
+    show_change_link = True   #https://docs.djangoproject.com/en/5.1/ref/contrib/admin/#inlines
+    inlines = [RoomImageInline]
+
+
+class HotelImageInline(admin.TabularInline):
+    model = HotelImage
+    extra = 1
 
 
 @admin.register(Hotel)
@@ -56,3 +57,4 @@ admin.site.register(User)
 admin.site.register(Review)
 admin.site.register(Rating)
 admin.site.register(Booking)
+
