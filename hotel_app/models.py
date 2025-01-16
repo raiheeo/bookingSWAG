@@ -88,7 +88,7 @@ class RoomImage(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='hotel_reviews')
     text = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -100,8 +100,8 @@ class Review(models.Model):
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    stars = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 11)])
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='hotel_ratings')
+    stars = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 11)],)
     created_Date = models.DateField(auto_now_add=True)
 
     def __str__(self):
